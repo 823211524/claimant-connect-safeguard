@@ -1,16 +1,37 @@
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/context/AuthContext';
+import { useEffect, useState } from 'react';
+
+interface Appointment {
+  date: string;
+  provider: string;
+  doctor: string;
+  userId: string;
+}
 
 const ClaimantDashboard = () => {
   const { user } = useAuth();
+  const [nextAppointment, setNextAppointment] = useState<Appointment | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      const appointments: Appointment[] = JSON.parse(localStorage.getItem('appointments') || '[]');
+      const userAppointments = appointments.filter(apt => apt.userId === user.id);
+      
+      // Get the next upcoming appointment
+      const upcoming = userAppointments
+        .filter(apt => new Date(apt.date) >= new Date())
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
+      
+      setNextAppointment(upcoming || null);
+    }
+  }, [user]);
 
   // Mock claimant data
   const claimantData = {
     claimNumber: "MVA2024001",
     accidentDate: "2024-01-15",
     status: "Active",
-    nextAppointment: "2024-02-01",
-    medicalProvider: "City Hospital",
   };
 
   return (
@@ -34,8 +55,15 @@ const ClaimantDashboard = () => {
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">Next Appointment</h2>
           <div className="space-y-2">
-            <p><span className="font-medium">Date:</span> {claimantData.nextAppointment}</p>
-            <p><span className="font-medium">Provider:</span> {claimantData.medicalProvider}</p>
+            {nextAppointment ? (
+              <>
+                <p><span className="font-medium">Date:</span> {new Date(nextAppointment.date).toLocaleDateString()}</p>
+                <p><span className="font-medium">Provider:</span> {nextAppointment.provider}</p>
+                <p><span className="font-medium">Doctor:</span> {nextAppointment.doctor}</p>
+              </>
+            ) : (
+              <p className="text-gray-500">No upcoming appointments</p>
+            )}
           </div>
         </Card>
       </div>
