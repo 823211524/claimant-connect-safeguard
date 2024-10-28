@@ -23,7 +23,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check for stored user data
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -32,15 +31,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    // Simulate API call
     setIsLoading(true);
     try {
-      // In a real app, this would be an API call
-      const mockUser = {
-        id: '1',
-        email,
-        name: 'John Doe',
-      };
+      // Simulate user lookup based on email
+      let mockUser;
+      switch (email.toLowerCase()) {
+        case 'bernard@example.com':
+          mockUser = { id: '1', email, name: 'Bernard Maatlho' };
+          break;
+        case 'keabetswe@example.com':
+          mockUser = { id: '2', email, name: 'Keabetswe Mokgalong' };
+          break;
+        case 'cliff@example.com':
+          mockUser = { id: '3', email, name: 'Cliff Keabetswe' };
+          break;
+        default:
+          mockUser = { id: '1', email, name: 'Bernard Maatlho' };
+      }
       setUser(mockUser);
       localStorage.setItem('user', JSON.stringify(mockUser));
       navigate('/dashboard');
@@ -52,9 +59,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signUp = async (email: string, password: string, name: string) => {
     setIsLoading(true);
     try {
-      // Simulate API call
       const mockUser = {
-        id: '1',
+        id: Math.random().toString(36).substr(2, 9),
         email,
         name,
       };
