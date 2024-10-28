@@ -33,11 +33,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Simulate user lookup based on email
       let mockUser;
       switch (email.toLowerCase()) {
         case 'bernard@example.com':
-          mockUser = { id: '1', email, name: 'Bernard Maatlho' };
+          mockUser = { id: '1', email, name: 'Bernard Matlho' };
           break;
         case 'keabetswe@example.com':
           mockUser = { id: '2', email, name: 'Keabetswe Mokgalong' };
@@ -46,7 +45,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           mockUser = { id: '3', email, name: 'Cliff Keabetswe' };
           break;
         default:
-          mockUser = { id: '1', email, name: 'Bernard Maatlho' };
+          mockUser = { id: '1', email, name: 'Bernard Matlho' };
       }
       setUser(mockUser);
       localStorage.setItem('user', JSON.stringify(mockUser));
