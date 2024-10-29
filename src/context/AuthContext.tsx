@@ -1,16 +1,21 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-}
+import type { User } from '@/types/user';
 
 interface AuthContextType {
   user: User | null;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, name: string) => Promise<void>;
+  signUp: (
+    email: string, 
+    password: string, 
+    name: string,
+    accidentDetails: {
+      date: string;
+      time: string;
+      firstHospital: string;
+      involvedAs: 'pedestrian' | 'passenger' | 'driver';
+    }
+  ) => Promise<void>;
   signOut: () => void;
   isLoading: boolean;
 }
@@ -33,19 +38,63 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      let mockUser;
+      let mockUser: User;
       switch (email.toLowerCase()) {
         case 'bernard@example.com':
-          mockUser = { id: '1', email, name: 'Bernard Matlho' };
+          mockUser = {
+            id: '1',
+            email,
+            name: 'Bernard Matlho',
+            coveragePeriods: [
+              {
+                startDate: '2024-01-15',
+                endDate: '2024-07-15',
+                type: 'Initial Coverage'
+              }
+            ]
+          };
           break;
         case 'keabetswe@example.com':
-          mockUser = { id: '2', email, name: 'Keabetswe Mokgalong' };
+          mockUser = {
+            id: '2',
+            email,
+            name: 'Keabetswe Mokgalong',
+            coveragePeriods: [
+              {
+                startDate: '2024-02-01',
+                endDate: '2024-08-01',
+                type: 'Initial Coverage'
+              }
+            ]
+          };
           break;
         case 'cliff@example.com':
-          mockUser = { id: '3', email, name: 'Cliff Keabetswe' };
+          mockUser = {
+            id: '3',
+            email,
+            name: 'Cliff Keabetswe',
+            coveragePeriods: [
+              {
+                startDate: '2024-03-01',
+                endDate: '2024-09-01',
+                type: 'Initial Coverage'
+              }
+            ]
+          };
           break;
         default:
-          mockUser = { id: '1', email, name: 'Bernard Matlho' };
+          mockUser = {
+            id: '1',
+            email,
+            name: 'Bernard Matlho',
+            coveragePeriods: [
+              {
+                startDate: '2024-01-15',
+                endDate: '2024-07-15',
+                type: 'Initial Coverage'
+              }
+            ]
+          };
       }
       setUser(mockUser);
       localStorage.setItem('user', JSON.stringify(mockUser));
@@ -55,13 +104,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const signUp = async (email: string, password: string, name: string) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    name: string,
+    accidentDetails: {
+      date: string;
+      time: string;
+      firstHospital: string;
+      involvedAs: 'pedestrian' | 'passenger' | 'driver';
+    }
+  ) => {
     setIsLoading(true);
     try {
-      const mockUser = {
+      const mockUser: User = {
         id: Math.random().toString(36).substr(2, 9),
         email,
         name,
+        accidentDetails,
+        coveragePeriods: [
+          {
+            startDate: accidentDetails.date,
+            endDate: new Date(new Date(accidentDetails.date).setMonth(new Date(accidentDetails.date).getMonth() + 6)).toISOString().split('T')[0],
+            type: 'Initial Coverage'
+          }
+        ]
       };
       setUser(mockUser);
       localStorage.setItem('user', JSON.stringify(mockUser));

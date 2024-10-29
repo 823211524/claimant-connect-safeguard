@@ -1,6 +1,7 @@
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
+import type { User } from '@/types/user';
 
 interface Appointment {
   date: string;
@@ -28,9 +29,22 @@ const ClaimantDashboard = () => {
 
   const claimantData = {
     claimNumber: "MVA2024001",
-    accidentDate: "2024-01-15",
+    accidentDate: user?.accidentDetails?.date || "2024-01-15",
     status: "Active",
   };
+
+  const mockCoveragePeriods = [
+    {
+      startDate: "2024-01-15",
+      endDate: "2024-07-15",
+      type: "Initial Coverage"
+    },
+    {
+      startDate: "2024-07-16",
+      endDate: "2024-12-31",
+      type: "Extended Coverage"
+    }
+  ];
 
   return (
     <div className="space-y-6">
@@ -65,6 +79,19 @@ const ClaimantDashboard = () => {
           </div>
         </Card>
       </div>
+
+      <Card className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 shadow-lg">
+        <h2 className="text-xl font-semibold mb-4 text-blue-700">Coverage Periods</h2>
+        <div className="space-y-4">
+          {mockCoveragePeriods.map((period, index) => (
+            <div key={index} className="p-4 bg-white rounded-lg shadow">
+              <p className="font-medium text-blue-800">{period.type}</p>
+              <p className="text-gray-600">From: {new Date(period.startDate).toLocaleDateString()}</p>
+              <p className="text-gray-600">To: {new Date(period.endDate).toLocaleDateString()}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 };
