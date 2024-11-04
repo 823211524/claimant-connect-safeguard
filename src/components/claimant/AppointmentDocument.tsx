@@ -33,7 +33,7 @@ const AppointmentDocument: React.FC<AppointmentDocumentProps> = ({ appointment }
     <div className="my-4">
       <div
         id="appointment-document"
-        className="relative p-8 bg-gradient-from-blue-50 to-purple-50 rounded-lg shadow-md border border-gray-200 overflow-hidden"
+        className="relative p-8 bg-blue-50 rounded-lg shadow-md border border-gray-200 overflow-hidden"
       >
         {/* Watermark */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
