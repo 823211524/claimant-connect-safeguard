@@ -1,93 +1,92 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 interface AppointmentDocumentProps {
   appointment: {
-    id: string;
-    date: string;
-    provider: string;
+    referenceNumber: string;
+    healthcareProvider: string;
     doctor: string;
     service: string;
+    date: string;
+    time: string;
   };
 }
 
-const AppointmentDocument = ({ appointment }: AppointmentDocumentProps) => {
-  const generatePDF = async () => {
+const AppointmentDocument: React.FC<AppointmentDocumentProps> = ({ appointment }) => {
+  const downloadPDF = async () => {
     const element = document.getElementById('appointment-document');
-    if (!element) return;
-
-    const canvas = await html2canvas(element);
-    const imgData = canvas.toDataURL('image/png');
-    
-    const pdf = new jsPDF();
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`MVA_Appointment_${appointment.id}.pdf`);
+    if (element) {
+      const canvas = await html2canvas(element);
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF();
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`appointment-${appointment.referenceNumber}.pdf`);
+    }
   };
 
   return (
-    <div className="relative">
-      <Card id="appointment-document" className="p-8 bg-white relative overflow-hidden">
-        {/* Watermark */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-10 rotate-[-30deg] text-6xl text-gray-500 pointer-events-none">
-          MVA OFFICIAL DOCUMENT
-        </div>
-
-        <div className="relative z-10 space-y-6">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-blue-800">Motor Vehicle Accident Fund</h2>
-            <p className="text-gray-600">Official Appointment Confirmation</p>
-          </div>
-
-          <div className="space-y-4">
-            <div className="border-b pb-2">
-              <p className="text-sm text-gray-600">Reference Number:</p>
-              <p className="font-medium">{appointment.id}</p>
-            </div>
-
-            <div className="border-b pb-2">
-              <p className="text-sm text-gray-600">Healthcare Provider:</p>
-              <p className="font-medium">{appointment.provider}</p>
-            </div>
-
-            <div className="border-b pb-2">
-              <p className="text-sm text-gray-600">Doctor:</p>
-              <p className="font-medium">{appointment.doctor}</p>
-            </div>
-
-            <div className="border-b pb-2">
-              <p className="text-sm text-gray-600">Service:</p>
-              <p className="font-medium">{appointment.service}</p>
-            </div>
-
-            <div className="border-b pb-2">
-              <p className="text-sm text-gray-600">Date & Time:</p>
-              <p className="font-medium">{new Date(appointment.date).toLocaleString()}</p>
-            </div>
-          </div>
-
-          <div className="mt-6 text-sm text-gray-600">
-            <p>This document serves as official proof of appointment from the Motor Vehicle Accident Fund.</p>
-            <p>Please present this document at the healthcare provider's reception.</p>
-          </div>
-        </div>
-      </Card>
-
-      <Button
-        onClick={generatePDF}
-        className="mt-4 w-full"
-        variant="outline"
+    <div className="my-4">
+      <div
+        id="appointment-document"
+        className="relative p-8 bg-gradient-from-blue-50 to-purple-50 rounded-lg shadow-md border border-gray-200 overflow-hidden"
       >
-        <Download className="w-4 h-4 mr-2" />
-        Download PDF
-      </Button>
+        {/* Watermark */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <p className="text-yellow-200 text-6xl font-bold transform rotate-45 opacity-20">
+            MVA OFFICIAL DOCUMENT
+          </p>
+        </div>
+
+        {/* Document Content */}
+        <div className="relative z-10">
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
+            Appointment Confirmation
+          </h2>
+          
+          <div className="space-y-4">
+            <div>
+              <p className="font-semibold">Reference Number:</p>
+              <p>{appointment.referenceNumber}</p>
+            </div>
+            
+            <div>
+              <p className="font-semibold">Healthcare Provider:</p>
+              <p>{appointment.healthcareProvider}</p>
+            </div>
+            
+            <div>
+              <p className="font-semibold">Doctor:</p>
+              <p>{appointment.doctor}</p>
+            </div>
+            
+            <div>
+              <p className="font-semibold">Service:</p>
+              <p>{appointment.service}</p>
+            </div>
+            
+            <div>
+              <p className="font-semibold">Date:</p>
+              <p>{appointment.date}</p>
+            </div>
+            
+            <div>
+              <p className="font-semibold">Time:</p>
+              <p>{appointment.time}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="mt-4 flex justify-end">
+        <Button onClick={downloadPDF}>
+          Download PDF
+        </Button>
+      </div>
     </div>
   );
 };
