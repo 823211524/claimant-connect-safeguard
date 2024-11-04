@@ -38,12 +38,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     try {
+      // Ensure email is not undefined before calling toLowerCase()
+      const emailLower = email?.toLowerCase() || '';
       let mockUser: User;
-      switch (email.toLowerCase()) {
+      
+      switch (emailLower) {
         case 'bernard@example.com':
           mockUser = {
             id: '1',
-            email,
+            email: emailLower,
             name: 'Bernard Matlho',
             coveragePeriods: [
               {
@@ -57,7 +60,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         case 'keabetswe@example.com':
           mockUser = {
             id: '2',
-            email,
+            email: emailLower,
             name: 'Keabetswe Mokgalong',
             coveragePeriods: [
               {
@@ -71,7 +74,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         case 'cliff@example.com':
           mockUser = {
             id: '3',
-            email,
+            email: emailLower,
             name: 'Cliff Keabetswe',
             coveragePeriods: [
               {
@@ -85,7 +88,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         default:
           mockUser = {
             id: '1',
-            email,
+            email: emailLower,
             name: 'Bernard Matlho',
             coveragePeriods: [
               {
@@ -119,7 +122,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const mockUser: User = {
         id: Math.random().toString(36).substr(2, 9),
-        email,
+        email: email?.toLowerCase() || '',
         name,
         accidentDetails,
         coveragePeriods: [
