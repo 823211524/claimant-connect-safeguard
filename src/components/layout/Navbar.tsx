@@ -3,7 +3,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
-  const { user, signOut } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <nav className="bg-white shadow-md">
@@ -23,7 +23,7 @@ const Navbar = () => {
                 <Link to="/appointments">
                   <Button variant="ghost">Appointments</Button>
                 </Link>
-                <Button onClick={signOut} variant="outline">
+                <Button onClick={logout} variant="outline">
                   Sign Out
                 </Button>
               </>
