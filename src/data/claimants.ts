@@ -1,9 +1,9 @@
 export const claimants = [
   {
     id: "CLM001",
-    email: "john.doe@example.com",
-    password: "password123", // In a real system, this would be hashed
-    name: "John Doe",
+    email: "bernardmatlho@gmail.com",
+    password: "bernardmatlho2406082001Q",
+    name: "Bernard Matlho",
     claimNumber: "MVA2024001",
     accidentDetails: {
       date: "2024-01-15",
@@ -20,9 +20,9 @@ export const claimants = [
   },
   {
     id: "CLM002",
-    email: "sarah.smith@example.com",
-    password: "password123",
-    name: "Sarah Smith",
+    email: "tlekgowe@gmail.com",
+    password: "tlamelo",
+    name: "Tlamelo Lekgowe",
     claimNumber: "MVA2024002",
     accidentDetails: {
       date: "2024-02-01",
@@ -44,9 +44,9 @@ export const claimants = [
   },
   {
     id: "CLM003",
-    email: "mike.brown@example.com",
-    password: "password123",
-    name: "Mike Brown",
+    email: "kmokgalong@gmail.com",
+    password: "keabetswe",
+    name: "Keabetswe Mokgalong",
     claimNumber: "MVA2024003",
     accidentDetails: {
       date: "2024-02-15",
