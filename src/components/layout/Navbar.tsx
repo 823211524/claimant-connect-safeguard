@@ -28,14 +28,9 @@ const Navbar = () => {
                 </Button>
               </>
             ) : (
-              <>
-                <Link to="/?auth=signin">
-                  <Button variant="ghost">Sign In</Button>
-                </Link>
-                <Link to="/?auth=signup">
-                  <Button>Sign Up</Button>
-                </Link>
-              </>
+              <Link to="/?auth=signin">
+                <Button variant="ghost">Sign In</Button>
+              </Link>
             )}
           </div>
         </div>
