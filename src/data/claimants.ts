@@ -15,6 +15,11 @@ export const claimants = [
         startDate: "2024-01-15",
         endDate: "2024-07-15",
         type: "Initial Coverage"
+      },
+      {
+        startDate: "2024-07-16",
+        endDate: "2024-12-31",
+        type: "Extended Coverage"
       }
     ]
   },
@@ -58,6 +63,11 @@ export const claimants = [
         startDate: "2024-02-15",
         endDate: "2024-08-15",
         type: "Initial Coverage"
+      },
+      {
+        startDate: "2024-08-16",
+        endDate: "2025-02-15",
+        type: "Extended Coverage"
       }
     ]
   }
