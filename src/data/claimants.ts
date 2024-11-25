@@ -1,8 +1,8 @@
 export const claimants = [
   {
     id: "CLM001",
-    email: "bernardmatlho@gmail.com",
-    password: "bernardmatlho2406082001Q",
+    email: "bbmatlho@idm.ac.bw",
+    password: "77359375",
     name: "Bernard Matlho",
     claimNumber: "MVA2024001",
     accidentDetails: {
