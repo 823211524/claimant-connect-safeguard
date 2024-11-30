@@ -1,8 +1,7 @@
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
+import type { User } from '@/types/user';
 
 interface Appointment {
   date: string;
@@ -14,36 +13,6 @@ interface Appointment {
 const ClaimantDashboard = () => {
   const { user } = useAuth();
   const [nextAppointment, setNextAppointment] = useState<Appointment | null>(null);
-
-  const { data: coveragePeriods } = useQuery({
-    queryKey: ['coveragePeriods', user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('coverage_periods')
-        .select('*')
-        .eq('claimant_id', user?.id)
-        .order('start_date', { ascending: true });
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id
-  });
-
-  const { data: accidentDetails } = useQuery({
-    queryKey: ['accidentDetails', user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('accident_details')
-        .select('*')
-        .eq('claimant_id', user?.id)
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id
-  });
 
   useEffect(() => {
     if (user) {
@@ -58,7 +27,24 @@ const ClaimantDashboard = () => {
     }
   }, [user]);
 
-  if (!user) return null;
+  const claimantData = {
+    claimNumber: "MVA2024001",
+    accidentDate: user?.accidentDetails?.date || "2024-01-15",
+    status: "Active",
+  };
+
+  const mockCoveragePeriods = [
+    {
+      startDate: "2024-01-15",
+      endDate: "2024-07-15",
+      type: "Initial Coverage"
+    },
+    {
+      startDate: "2024-07-16",
+      endDate: "2024-12-31",
+      type: "Extended Coverage"
+    }
+  ];
 
   return (
     <div className="space-y-6">
@@ -68,13 +54,11 @@ const ClaimantDashboard = () => {
         <Card className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 shadow-lg">
           <h2 className="text-xl font-semibold mb-4 text-blue-700">Claim Information</h2>
           <div className="space-y-2">
-            <p><span className="font-medium text-blue-600">Claim Number:</span> {user.claimNumber}</p>
-            <p><span className="font-medium text-blue-600">Accident Date:</span> {accidentDetails?.date}</p>
-            <p><span className="font-medium text-blue-600">Accident Location:</span> {accidentDetails?.location}</p>
-            <p><span className="font-medium text-blue-600">Accident Type:</span> {accidentDetails?.type}</p>
+            <p><span className="font-medium text-blue-600">Claim Number:</span> {claimantData.claimNumber}</p>
+            <p><span className="font-medium text-blue-600">Accident Date:</span> {claimantData.accidentDate}</p>
             <p><span className="font-medium text-blue-600">Status:</span> 
               <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                Active
+                {claimantData.status}
               </span>
             </p>
           </div>
@@ -99,11 +83,11 @@ const ClaimantDashboard = () => {
       <Card className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 shadow-lg">
         <h2 className="text-xl font-semibold mb-4 text-blue-700">Coverage Periods</h2>
         <div className="space-y-4">
-          {coveragePeriods?.map((period, index) => (
+          {mockCoveragePeriods.map((period, index) => (
             <div key={index} className="p-4 bg-white rounded-lg shadow">
               <p className="font-medium text-blue-800">{period.type}</p>
-              <p className="text-gray-600">From: {new Date(period.start_date).toLocaleDateString()}</p>
-              <p className="text-gray-600">To: {new Date(period.end_date).toLocaleDateString()}</p>
+              <p className="text-gray-600">From: {new Date(period.startDate).toLocaleDateString()}</p>
+              <p className="text-gray-600">To: {new Date(period.endDate).toLocaleDateString()}</p>
             </div>
           ))}
         </div>
