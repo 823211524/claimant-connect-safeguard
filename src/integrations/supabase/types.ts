@@ -9,7 +9,97 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      accident_details: {
+        Row: {
+          claimant_id: string | null
+          created_at: string
+          date: string
+          id: string
+          location: string
+          type: string
+        }
+        Insert: {
+          claimant_id?: string | null
+          created_at?: string
+          date: string
+          id?: string
+          location: string
+          type: string
+        }
+        Update: {
+          claimant_id?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          location?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "accident_details_claimant_id_fkey"
+            columns: ["claimant_id"]
+            isOneToOne: false
+            referencedRelation: "claimants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      claimants: {
+        Row: {
+          claim_number: string
+          created_at: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          claim_number: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          claim_number?: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      coverage_periods: {
+        Row: {
+          claimant_id: string | null
+          created_at: string
+          end_date: string
+          id: string
+          start_date: string
+          type: string
+        }
+        Insert: {
+          claimant_id?: string | null
+          created_at?: string
+          end_date: string
+          id?: string
+          start_date: string
+          type: string
+        }
+        Update: {
+          claimant_id?: string | null
+          created_at?: string
+          end_date?: string
+          id?: string
+          start_date?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coverage_periods_claimant_id_fkey"
+            columns: ["claimant_id"]
+            isOneToOne: false
+            referencedRelation: "claimants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
