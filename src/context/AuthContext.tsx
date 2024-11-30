@@ -1,18 +1,18 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { claimants } from '@/data/claimants';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 
 interface User {
   id: string;
   name: string;
   email: string;
   claimNumber: string;
-  accidentDetails?: {
+  accidentDetails: {
     date: string;
     location: string;
     type: string;
   };
-  coveragePeriods?: Array<{
+  coveragePeriods: Array<{
     startDate: string;
     endDate: string;
     type: string;
@@ -31,54 +31,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
-  const fetchUserData = async (email: string) => {
-    try {
-      // Fetch claimant data
-      const { data: claimantData, error: claimantError } = await supabase
-        .from('claimants')
-        .select(`
-          id,
-          claim_number,
-          accident_details (
-            date,
-            location,
-            type
-          ),
-          coverage_periods (
-            start_date,
-            end_date,
-            type
-          )
-        `)
-        .single();
-
-      if (claimantError) throw claimantError;
-
-      const userData: User = {
-        id: claimantData.id,
-        name: email.split('@')[0], // Using email username as name for now
-        email: email,
-        claimNumber: claimantData.claim_number,
-        accidentDetails: claimantData.accident_details ? {
-          date: claimantData.accident_details.date,
-          location: claimantData.accident_details.location,
-          type: claimantData.accident_details.type
-        } : undefined,
-        coveragePeriods: claimantData.coverage_periods?.map(period => ({
-          startDate: period.start_date,
-          endDate: period.end_date,
-          type: period.type
-        }))
-      };
-
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      throw error;
-    }
-  };
-
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -87,30 +39,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      
-      if (error) throw error;
-      
-      await fetchUserData(email);
-    } catch (error) {
-      console.error('Error signing in:', error);
-      throw error;
+    const claimant = claimants.find(c => c.email === email && c.password === password);
+    
+    if (!claimant) {
+      throw new Error('Invalid credentials or claimant not found in MVA database');
     }
+
+    const { password: _, ...userWithoutPassword } = claimant;
+    setUser(userWithoutPassword);
+    localStorage.setItem('user', JSON.stringify(userWithoutPassword));
   };
 
-  const logout = async () => {
-    try {
-      await supabase.auth.signOut();
-      setUser(null);
-      localStorage.removeItem('user');
-      navigate('/');
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('user');
+    navigate('/');
   };
 
   return (
