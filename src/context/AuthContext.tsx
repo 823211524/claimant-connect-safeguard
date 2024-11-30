@@ -59,10 +59,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         name: email.split('@')[0], // Using email username as name for now
         email: email,
         claimNumber: claimantData.claim_number,
-        accidentDetails: claimantData.accident_details?.[0] ? {
-          date: claimantData.accident_details[0].date,
-          location: claimantData.accident_details[0].location,
-          type: claimantData.accident_details[0].type
+        accidentDetails: claimantData.accident_details ? {
+          date: claimantData.accident_details.date,
+          location: claimantData.accident_details.location,
+          type: claimantData.accident_details.type
         } : undefined,
         coveragePeriods: claimantData.coverage_periods?.map(period => ({
           startDate: period.start_date,
