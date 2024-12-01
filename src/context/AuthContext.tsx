@@ -1,18 +1,19 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { claimants } from '@/data/claimants';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
 interface User {
   id: string;
   name: string;
   email: string;
   claimNumber: string;
-  accidentDetails: {
+  accidentDetails?: {
     date: string;
     location: string;
     type: string;
   };
-  coveragePeriods: Array<{
+  coveragePeriods?: Array<{
     startDate: string;
     endDate: string;
     type: string;
@@ -34,9 +35,58 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      fetchUserData(parsedUser.id);
     }
   }, []);
+
+  const fetchUserData = async (userId: string) => {
+    try {
+      // Fetch claimant data
+      const { data: claimantData } = await supabase
+        .from('claimants')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (claimantData) {
+        // Fetch accident details
+        const { data: accidentDetails } = await supabase
+          .from('accident_details')
+          .select('*')
+          .eq('claimant_id', claimantData.id)
+          .single();
+
+        // Fetch coverage periods
+        const { data: coveragePeriods } = await supabase
+          .from('coverage_periods')
+          .select('*')
+          .eq('claimant_id', claimantData.id);
+
+        // Update user state with fetched data
+        setUser(prevUser => {
+          if (!prevUser) return null;
+          return {
+            ...prevUser,
+            claimNumber: claimantData.claim_number,
+            accidentDetails: accidentDetails ? {
+              date: accidentDetails.date,
+              location: accidentDetails.location,
+              type: accidentDetails.type
+            } : undefined,
+            coveragePeriods: coveragePeriods ? coveragePeriods.map(period => ({
+              startDate: period.start_date,
+              endDate: period.end_date,
+              type: period.type
+            })) : []
+          };
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
 
   const signIn = async (email: string, password: string) => {
     const claimant = claimants.find(c => c.email === email && c.password === password);
@@ -48,6 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { password: _, ...userWithoutPassword } = claimant;
     setUser(userWithoutPassword);
     localStorage.setItem('user', JSON.stringify(userWithoutPassword));
+    await fetchUserData(userWithoutPassword.id);
   };
 
   const logout = () => {
