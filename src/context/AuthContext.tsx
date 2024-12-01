@@ -37,32 +37,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
-      fetchUserData(parsedUser.id);
+      fetchUserData(parsedUser.claimNumber);
     }
   }, []);
 
-  const fetchUserData = async (userId: string) => {
+  const fetchUserData = async (claimNumber: string) => {
     try {
-      // Fetch claimant data
-      const { data: claimantData } = await supabase
+      // Fetch claimant data using claim_number instead of user_id
+      const { data: claimantData, error: claimantError } = await supabase
         .from('claimants')
         .select('*')
-        .eq('user_id', userId)
+        .eq('claim_number', claimNumber)
         .single();
 
+      if (claimantError) throw claimantError;
+
       if (claimantData) {
-        // Fetch accident details
-        const { data: accidentDetails } = await supabase
+        // Fetch accident details using claimant_id
+        const { data: accidentDetails, error: accidentError } = await supabase
           .from('accident_details')
           .select('*')
           .eq('claimant_id', claimantData.id)
           .single();
 
-        // Fetch coverage periods
-        const { data: coveragePeriods } = await supabase
+        if (accidentError) throw accidentError;
+
+        // Fetch coverage periods using claimant_id
+        const { data: coveragePeriods, error: coverageError } = await supabase
           .from('coverage_periods')
           .select('*')
           .eq('claimant_id', claimantData.id);
+
+        if (coverageError) throw coverageError;
 
         // Update user state with fetched data
         setUser(prevUser => {
@@ -98,7 +104,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { password: _, ...userWithoutPassword } = claimant;
     setUser(userWithoutPassword);
     localStorage.setItem('user', JSON.stringify(userWithoutPassword));
-    await fetchUserData(userWithoutPassword.id);
+    await fetchUserData(userWithoutPassword.claimNumber);
   };
 
   const logout = () => {
